@@ -102,6 +102,74 @@ var_dump($content);*/
 host::init();
 virtual::init();
 
+$errorPath=false;
+$content="<h1>404 found</h1>";
+if(isset($_GET['remove'])){
+    virtual::removeVirtual($_GET['remove']);
+    virtual::updateVirtual();
+    virtual::updateHost();
+}
+if(isset($_GET['add'],$_GET['path'])&&trim($_GET['add'])&&trim($_GET['path'])){
+    if(virtual::addVirtual(urlencode($_GET['add']),$_GET['path'])){
+        virtual::updateVirtual();
+        virtual::updateHost();
+    }else{
+        $errorPath=true;
+    }
+
+}
+$content=virtual::listHtml();
+?>
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Virtual-host</title>
+    <style>
+        body{background:#1a2029;color:#f5f5f5;font-family:sans-serif}
+        .add{display:flex;flex-flow:column;margin:2em auto;border-top:1px solid grey;width:50%}
+        .add form{display:flex;flex-flow:column;width:400px;align-self:center;margin-top:2em}
+        form input{padding: 0.7em;border-radius:5px;border: none;}
+        input[type="submit"]{margin-top:3em;background: #30363a;color: white;cursor: pointer;}
+        label{font-size:.8em;margin:.4em .8em}
+        th,td{padding:.2em 1em;text-align:center}
+        td{border-top:1px solid #494949}
+        table{margin:auto;border-collapse: collapse}
+        td {line-height: 1.6em;}
+        a#setting svg {height: 1.8em;fill: white;}
+        a#setting {margin:1.2em 3em;display: block;padding:.5em}
+				input[type="submit"]:hover {background: #3a4044;}
+        .error-input {color: orangered;margin: 0.5em 0 0 1em;font-size: 12px}
+        table a {color:#39adff}
+        a.remove-btn {width: 2em;display: block;margin: auto;border-radius: 6px;background: #b13a28;color: #1a2029;text-decoration: none;font-weight: 700}
+        a.remove-btn:hover {background: #c74d3a}
+        tbody tr:hover {background: rgb(124 132 139 / 21%)}
+    </style>
+</head>
+<body>
+<a href="/" id="setting">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M256 0C114.6 0 0 114.6 0 256c0 141.4 114.6 256 256 256s256-114.6 256-256C512 114.6 397.4 0 256 0zM384 288H205.3l49.38 49.38c12.5 12.5 12.5 32.75 0 45.25s-32.75 12.5-45.25 0L105.4 278.6C97.4 270.7 96 260.9 96 256c0-4.883 1.391-14.66 9.398-22.65l103.1-103.1c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L205.3 224H384c17.69 0 32 14.33 32 32S401.7 288 384 288z"/></svg>
+</a>
+    <?=$content ?>
+<div class="add">
+    <form method="get">
+        <label>Link</label>
+        <input type="text" name="add">
+        <label>Path</label>
+        <input type="text" name="path" value="<?= $_GET['val'] ?? 'folder' ?>">
+        <?= ($errorPath)?"<span class='error-input'>Chemin de dossier introuvable</span>":""?>
+        <label style="margin-top:2em"><input type="checkbox" name="FallbackResource">Rediriger les routes vers l'index</label>
+
+        <input type="submit" value="Ajouter">
+    </form>
+</div>
+</body>
+</html>
+	<?php
+}}
 
 abstract class host{
     static $posSection=-1,
@@ -267,75 +335,4 @@ abstract class virtual{
         return $html;
     }
 }
-
-
-
-$errorPath=false;
-$content="<h1>404 found</h1>";
-if(isset($_GET['remove'])){
-    virtual::removeVirtual($_GET['remove']);
-    virtual::updateVirtual();
-    virtual::updateHost();
-}
-if(isset($_GET['add'],$_GET['path'])&&trim($_GET['add'])&&trim($_GET['path'])){
-    if(virtual::addVirtual(urlencode($_GET['add']),$_GET['path'])){
-        virtual::updateVirtual();
-        virtual::updateHost();
-    }else{
-        $errorPath=true;
-    }
-
-}
-$content=virtual::listHtml();
-?>
-<!doctype html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Virtual-host</title>
-    <style>
-        body{background:#1a2029;color:#f5f5f5;font-family:sans-serif}
-        .add{display:flex;flex-flow:column;margin:2em auto;border-top:1px solid grey;width:50%}
-        .add form{display:flex;flex-flow:column;width:400px;align-self:center;margin-top:2em}
-        form input{padding: 0.7em;border-radius:5px;border: none;}
-        input[type="submit"]{margin-top:3em;background: #30363a;color: white;cursor: pointer;}
-        label{font-size:.8em;margin:.4em .8em}
-        th,td{padding:.2em 1em;text-align:center}
-        td{border-top:1px solid #494949}
-        table{margin:auto;border-collapse: collapse}
-        td {line-height: 1.6em;}
-        a#setting svg {height: 1.8em;fill: white;}
-        a#setting {margin:1.2em 3em;display: block;padding:.5em}
-				input[type="submit"]:hover {background: #3a4044;}
-        .error-input {color: orangered;margin: 0.5em 0 0 1em;font-size: 12px}
-        table a {color:#39adff}
-        a.remove-btn {width: 2em;display: block;margin: auto;border-radius: 6px;background: #b13a28;color: #1a2029;text-decoration: none;font-weight: 700}
-        a.remove-btn:hover {background: #c74d3a}
-        tbody tr:hover {background: rgb(124 132 139 / 21%)}
-    </style>
-</head>
-<body>
-<a href="/" id="setting">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M256 0C114.6 0 0 114.6 0 256c0 141.4 114.6 256 256 256s256-114.6 256-256C512 114.6 397.4 0 256 0zM384 288H205.3l49.38 49.38c12.5 12.5 12.5 32.75 0 45.25s-32.75 12.5-45.25 0L105.4 278.6C97.4 270.7 96 260.9 96 256c0-4.883 1.391-14.66 9.398-22.65l103.1-103.1c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L205.3 224H384c17.69 0 32 14.33 32 32S401.7 288 384 288z"/></svg>
-</a>
-    <?=$content ?>
-<div class="add">
-    <form method="get">
-        <label>Link</label>
-        <input type="text" name="add">
-        <label>Path</label>
-        <input type="text" name="path" value="<?= $_GET['val'] ?? 'folder' ?>">
-        <?= ($errorPath)?"<span class='error-input'>Chemin de dossier introuvable</span>":""?>
-        <label style="margin-top:2em"><input type="checkbox" name="FallbackResource">Rediriger les routes vers l'index</label>
-
-        <input type="submit" value="Ajouter">
-    </form>
-</div>
-</body>
-</html>
-	<?php
-}}
 ?>
