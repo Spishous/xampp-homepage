@@ -50,7 +50,7 @@ sort($files1,SORT_NATURAL | SORT_FLAG_CASE);
 foreach($files1 as $a){
 	if(strpos($a,".")==""&&$a!="."&&$a!=".."){
 	    $count++;
-	    $list.="<span class='folder'><a class='link' href='./".$a."'>".$a."<a href='vh.php?val=".$a."' class='link-setting'>O</a></a></span>";}
+	    $list.="<span class='folder'><a class='link' href='./".$a."'>".$a."<a href='?page=host-config&val=".$a."' class='link-setting'>O</a></a></span>";}
 }
 ?>
 <div class="count" id="counter"><?=(($count>1)?$count.' sites':$count.' sites')?></div>
@@ -240,8 +240,8 @@ abstract class virtual{
         $prefixStart="<VirtualHost *:80>",
         $prefixEnd="</VirtualHost>",$listObj=[];
     static function init()
-    {
-        self::$virtual = file_get_contents('../apache/conf/extra/httpd-vhosts.conf');
+		{
+        self::$virtual = file_get_contents($_SERVER["DOCUMENT_ROOT"].'/../apache/conf/extra/httpd-vhosts.conf');
         self::$virtual_a = explode(PHP_EOL, self::$virtual);
     }
     static function getListObj(): array
