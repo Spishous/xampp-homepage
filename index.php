@@ -116,7 +116,6 @@ if(isset($_GET['add'],$_GET['path'])&&trim($_GET['add'])&&trim($_GET['path'])){
     }else{
         $errorPath=true;
     }
-
 }
 $content=virtual::listHtml();
 ?>
@@ -162,7 +161,7 @@ $content=virtual::listHtml();
         <input type="text" name="path" value="<?= $_GET['val'] ?? 'folder' ?>">
         <?= ($errorPath)?"<span class='error-input'>Chemin de dossier introuvable</span>":""?>
         <label style="margin-top:2em"><input type="checkbox" name="FallbackResource">Rediriger les routes vers l'index</label>
-
+				<input type="hidden" name="page" value="host-config">
         <input type="submit" value="Ajouter">
     </form>
 </div>
@@ -328,7 +327,7 @@ abstract class virtual{
             $html.="<tr>
                 <td><a href='http://".$v['ServerName']."'>".$v['ServerName']."</a></td>
                 <td>".substr($v['DocumentRoot'],1,-1)."</td>
-                <td><a href='?remove=".$v['ServerName']."' class='remove-btn'>X</a></td>
+                <td><a href='?page=host-config&remove=".$v['ServerName']."' class='remove-btn'>X</a></td>
                 </tr>";
         }
         $html.="</tbody></table>";
